@@ -34,21 +34,8 @@ public class DialogModelo extends JDialog implements ActionListener, MouseListen
 	private JLabel lblIcon;
 	private JPanel panelContenido;
 	
-	public static void main(String[] args) {
-		
-		
-		try {
-			DialogModelo dialog = new DialogModelo();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setLocationRelativeTo(null);
-			dialog.setVisible(true);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public DialogModelo() {
+		setAutoRequestFocus(false);
 		setUndecorated(true);
 		setModal(true);
 		setBounds(100, 100, 700, 600);

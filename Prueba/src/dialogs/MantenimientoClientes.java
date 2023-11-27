@@ -1,9 +1,14 @@
 package dialogs;
 
+import arreglos.ArregloClientes;
+import clases.Cliente;
+
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -12,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.DefaultTableModel;
 
 public class MantenimientoClientes extends DialogModelo {
 	private static final long serialVersionUID = 1L;
@@ -32,6 +38,8 @@ public class MantenimientoClientes extends DialogModelo {
 	private JLabel lblApellido;
 	private JLabel lblTelefono;
 	private JLabel lblDni;
+	private DefaultTableModel model;
+	private String[] codigosClientes;
 
 	public MantenimientoClientes() {
 		getLblTitle().setBounds(36, 0, 155, 36);
@@ -148,36 +156,58 @@ public class MantenimientoClientes extends DialogModelo {
 		scrollPane.setBounds(10, 101, 740, 332);
 		getPanelContenido().add(scrollPane);
 
-		table = new JTable();
+		model = new DefaultTableModel();
+		model.addColumn("Código");
+		model.addColumn("Nombre");
+		model.addColumn("Apellido");
+		model.addColumn("Teléfono");
+		model.addColumn("DNI");
+
+		table = new JTable(model);
 		table.setBorder(null);
 		scrollPane.setViewportView(table);
 		getPbX().setLocation(724, 0);
 		getPaneHeader().setBounds(0, 0, 760, 36);
 		setBounds(0, 0, 760, 480);
 		getLblX().addMouseListener(this);
+
+		txtCodigo.setText("" + arregloClientes.codigoCorrelativo());
+		consulta.getComboBox().addActionListener(this);
+		actualizarTablaClientes();
+		actualizarComboBoxClientes();
 	}
+
+	ArregloClientes arregloClientes = new ArregloClientes();
+	Consulta consulta = new Consulta();
+
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == consulta.getComboBox()) {
+			actualizarDatosEnTextAreaClientes();
+		}
+	}
+
 	public void mouseReleased(MouseEvent e) {
 		if (e.getSource() == getLblX() && getLblX().contains(e.getPoint())) {
 			HoverMenu(getLblX(), magenta, oscuro);
 			Salir();
 		}
 		if (e.getSource() == lblIngreso && lblIngreso.contains(e.getPoint())) {
-			JOptionPane.showMessageDialog(null, "Has presionado el botón: Ingreso :)");	
+			agregarCliente();
 		}
 		if (e.getSource() == lblModificacion && lblModificacion.contains(e.getPoint())) {
-			JOptionPane.showMessageDialog(null, "Has presionado el botón: Modificación :)");	
-		}	
+			modificarCliente();
+		}
 		if (e.getSource() == lblConsulta && lblConsulta.contains(e.getPoint())) {
-			JOptionPane.showMessageDialog(null, "Has presionado el botón: Consulta :)");	
-		}	
+			dialogsClientes(consulta);
+		}
 		if (e.getSource() == lblEliminar && lblEliminar.contains(e.getPoint())) {
-			JOptionPane.showMessageDialog(null, "Has presionado el botón: Eliminar :)");	
-		}	
-		
+			eliminarCliente();
+		}
+
 	}
 
 	public void mouseEntered(MouseEvent e) {
-	
+
 		if (e.getSource() == getLblX()) {
 			HoverMenu(getLblX(), oscuro, magenta);
 		}
@@ -214,4 +244,180 @@ public class MantenimientoClientes extends DialogModelo {
 		}
 	}
 
+	private void actualizarTablaClientes() {
+		// Limpiar el modelo actual
+		model.setRowCount(0);
+
+		// Agregar los clientes al modelo de la tabla
+		for (int i = 0; i < arregloClientes.tamanio(); i++) {
+			Cliente cliente = arregloClientes.obtener(i);
+			Object[] row = { cliente.getCodigoCliente(), cliente.getNombre(), cliente.getApellido(), cliente.getDni(),
+					cliente.getTelefono() };
+			model.addRow(row);
+		}
+	}
+
+	private void actualizarComboBoxClientes() {
+		consulta.getComboBox().removeAllItems();
+		codigosClientes = arregloClientes.getCodigos();
+		consulta.setCodigosEnComboBox(codigosClientes);
+	}
+
+	private void actualizarDatosEnTextAreaClientes() {
+		if (!arregloClientes.estaVacio()) {
+			// Obtener el código seleccionado del JComboBox
+			String codigoSeleccionado = (String) consulta.getComboBox().getSelectedItem();
+			if (codigoSeleccionado != null) {
+				// Obtener el cliente correspondiente al código seleccionado
+				Cliente cliente = arregloClientes.buscarClientePorCodigo(Integer.parseInt(codigoSeleccionado));
+
+				// Mostrar los datos en el área de texto
+				if (cliente != null) {
+					consulta.getTextArea()
+							.setText("Código: " + cliente.getCodigoCliente() + "\nNombre: " + cliente.getNombre()
+									+ "\nApellido: " + cliente.getApellido() + "\nDNI: " + cliente.getDni()
+									+ "\nTeléfono: " + cliente.getTelefono());
+				} else {
+					// Limpiar el área de texto si no se encuentra el cliente
+					consulta.getTextArea().setText("");
+				}
+			}
+		}
+	}
+
+	private void agregarCliente() {
+		// Obtener datos de las áreas de texto
+		String codigoTexto = txtCodigo.getText().trim();
+		String nombre = txtNombre.getText().trim();
+		String apellido = txtApellido.getText().trim();
+		String dni = txtDNI.getText().trim();
+		String telefono = txtTelefono.getText().trim();
+
+		// Verificar que el código no esté vacío y sea un entero positivo
+		int codigo = Integer.parseInt(codigoTexto);
+
+		// Verificar que los campos obligatorios no estén vacíos
+		if (!nombre.isEmpty() && !apellido.isEmpty() && !dni.isEmpty() && !telefono.isEmpty()) {
+			// Crear objeto Cliente con el próximo código correlativo
+			Cliente nuevoCliente = new Cliente(nombre, apellido, dni, telefono, codigo);
+			// Agregar el cliente al arreglo y guardar en el archivo
+			arregloClientes.adicionar(nuevoCliente);
+			arregloClientes.grabarClientes();
+			// Puedes realizar otras operaciones necesarias, como actualizar una tabla
+			actualizarTablaClientes();
+			// Limpiar las áreas de texto después de agregar
+			limpiarAreasTexto();
+			txtCodigo.setText("" + arregloClientes.codigoCorrelativo());
+			// Puedes mostrar un mensaje indicando que se agregó el cliente con éxito
+			JOptionPane.showMessageDialog(this, "Cliente agregado correctamente.");
+		} else {
+			JOptionPane.showMessageDialog(this, "Por favor, completa todos los campos obligatorios.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void limpiarAreasTexto() {
+		txtCodigo.setText("");
+		txtNombre.setText("");
+		txtApellido.setText("");
+		txtDNI.setText("");
+		txtTelefono.setText("");
+	}
+
+	private void modificarCliente() {
+		if (!arregloClientes.estaVacio()) {
+			int selectedRow = table.getSelectedRow();
+
+			if (selectedRow == -1) {
+				JOptionPane.showMessageDialog(this, "Seleccione un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+			} else {
+				// Obtener el cliente seleccionado
+				Cliente clienteSeleccionado = arregloClientes.obtener(selectedRow);
+
+				// Crear una ventana de diálogo para modificar datos
+				JTextField txtNombre = new JTextField(clienteSeleccionado.getNombre());
+				JTextField txtApellido = new JTextField(clienteSeleccionado.getApellido());
+				JTextField txtDNI = new JTextField(clienteSeleccionado.getDni());
+				JTextField txtTelefono = new JTextField(clienteSeleccionado.getTelefono());
+
+				Object[] message = { "Código: " + clienteSeleccionado.getCodigoCliente(), "Nombre:", txtNombre,
+						"Apellido:", txtApellido, "DNI:", txtDNI, "Teléfono:", txtTelefono };
+
+				int option = JOptionPane.showConfirmDialog(this, message, "Modificar Cliente",
+						JOptionPane.OK_CANCEL_OPTION);
+
+				if (option == JOptionPane.OK_OPTION) {
+					try {
+						// Obtener datos modificados
+						String nuevoNombre = txtNombre.getText().trim();
+						String nuevoApellido = txtApellido.getText().trim();
+						String nuevoDNI = txtDNI.getText().trim();
+						String nuevoTelefono = txtTelefono.getText().trim();
+
+						// Modificar el cliente
+						clienteSeleccionado.setNombre(nuevoNombre);
+						clienteSeleccionado.setApellido(nuevoApellido);
+						clienteSeleccionado.setDni(nuevoDNI);
+						clienteSeleccionado.setTelefono(nuevoTelefono);
+
+						// Grabar los cambios en el archivo
+						arregloClientes.grabarClientes();
+						// Actualizar la tabla
+						actualizarTablaClientes();
+					} catch (NumberFormatException ex) {
+						JOptionPane.showMessageDialog(this, "Por favor, ingresa datos válidos.", "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		} else {
+			JOptionPane.showMessageDialog(this, "No existen clientes registrados :(", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void dialogsClientes(JDialog x) {
+		if (!arregloClientes.estaVacio()) {
+			actualizarComboBoxClientes();
+			x.setLocationRelativeTo(null);
+			x.setVisible(true);
+			x.requestFocus();
+		} else {
+			JOptionPane.showMessageDialog(this, "No existen clientes registrados :(", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void eliminarCliente() {
+		if (!arregloClientes.estaVacio()) {
+			int selectedRow = table.getSelectedRow();
+
+			if (selectedRow == -1) {
+				JOptionPane.showMessageDialog(this, "Seleccione un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+			} else {
+				// Obtener el código del cliente seleccionado
+				int codigoCliente = (int) model.getValueAt(selectedRow, 0);
+
+				// Mostrar un cuadro de diálogo de confirmación
+				int confirmacion = JOptionPane.showConfirmDialog(this,
+						"¿Está seguro que desea eliminar este cliente?\n\nCódigo: " + codigoCliente,
+						"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+
+				// Si el usuario confirma la eliminación
+				if (confirmacion == JOptionPane.YES_OPTION) {
+					// Eliminar y reasignar códigos correlativos
+					arregloClientes.eliminarYReasignar(codigoCliente);
+
+					// Actualizar la tabla
+					actualizarTablaClientes();
+					// Obtener y establecer el próximo código correlativo
+					int proximoCodigo = arregloClientes.codigoCorrelativo();
+					txtCodigo.setText(String.valueOf(proximoCodigo));
+				}
+			}
+		} else {
+			JOptionPane.showMessageDialog(this, "No existen clientes registrados :(", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
 }

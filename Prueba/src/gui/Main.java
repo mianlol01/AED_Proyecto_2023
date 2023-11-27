@@ -328,19 +328,14 @@ public class Main extends JFrame implements ActionListener, MouseListener, Mouse
 		}
 	}
 
-	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void mousePressed(MouseEvent e) {
 		if (e.getSource() == paneHeader) {
 			campturarCoordenadas(e);
@@ -348,7 +343,6 @@ public class Main extends JFrame implements ActionListener, MouseListener, Mouse
 
 	}
 
-	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (e.getSource() == pbX && pbX.contains(e.getPoint())) {
 			Salir();
@@ -407,7 +401,6 @@ public class Main extends JFrame implements ActionListener, MouseListener, Mouse
 		}
 	}
 
-	@Override
 	public void mouseExited(MouseEvent e) {
 		if (e.getSource() == pbX) {
 			HoverOut(pbX, lblX, oscuro, magenta);

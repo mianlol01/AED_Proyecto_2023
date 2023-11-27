@@ -1,5 +1,7 @@
 package paneles;
 
+import arreglos.*;
+
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 
@@ -11,6 +13,8 @@ import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -120,15 +124,30 @@ public class PanelVentas extends Modelo {
 		panelIconReport.add(lblReportIcon);
 	}
 
-	Vender v = new Vender();
-	ReportesVentas r = new ReportesVentas();
-
 	public void mouseReleased(MouseEvent e) {
 		if (e.getSource() == paneVender && paneVender.contains(e.getPoint())) {
-			dialogs(v);
+			ArregloVendedores av = new ArregloVendedores();
+			ArregloProductos ap = new ArregloProductos();
+			ArregloClientes ac = new ArregloClientes();
+			if (av.estaVacio()) {
+				JOptionPane.showMessageDialog(this, "No existe vendedor registrado.", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+			else if (ap.estaVacio()) {
+				JOptionPane.showMessageDialog(this, "No existe producto registrado.", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+			else if (ac.estaVacio()) {
+				JOptionPane.showMessageDialog(this, "No existe cliente registrado.", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}else {
+				Vender v = new Vender();
+				dialogs(v);
+			}
 		}
-		if (e.getSource() == paneReportes && paneReportes.contains(e.getPoint())) {
 
+		if (e.getSource() == paneReportes && paneReportes.contains(e.getPoint())) {
+			ReportesVentas r = new ReportesVentas();
 			dialogs(r);
 		}
 	}

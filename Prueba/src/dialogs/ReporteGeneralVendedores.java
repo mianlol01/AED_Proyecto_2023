@@ -1,5 +1,8 @@
 package dialogs;
 
+import arreglos.*;
+import clases.*;
+
 import java.awt.Color;
 
 import javax.swing.JScrollPane;
@@ -27,6 +30,43 @@ public class ReporteGeneralVendedores extends DialogModelo{
 		
 		txtArea = new JTextArea();
 		scrollPane.setViewportView(txtArea);
+		
+		informe();
+	}
+	
+	ArregloVendedores arregloVendedores = new ArregloVendedores();
+	ArregloFacturas arregloFacturas = new ArregloFacturas();
+
+	private void informe() {
+		for (int i = 0; i < arregloVendedores.tamanio(); i++) {
+		    Vendedor vendedor = arregloVendedores.obtener(i);
+
+		    // 2. Obtener Información de Ventas
+		    int numVentas = 0;
+		    int unidadesVendidasAcumuladas = 0;
+		    double importeTotalAcumulado = 0;
+
+		    // Recorrer el Arreglo de Facturas para el vendedor actual
+		    for (int j = 0; j < arregloFacturas.tamanio(); j++) {
+		        Factura factura = arregloFacturas.obtener(j);
+
+		        // Verificar si la factura pertenece al vendedor actual
+		        if (factura.getCodigoVendedor() == vendedor.getCodigoVendedor()) {
+		            numVentas++;
+		            unidadesVendidasAcumuladas += factura.getUnidades();
+		            importeTotalAcumulado += factura.getPrecio();
+		        }
+		    }
+
+		    txtArea.append("Código: " + vendedor.getCodigoVendedor() + "\n");
+		    txtArea.append("Nombre: " + vendedor.getNombre() + "\n");
+		    txtArea.append("Apellido: " + vendedor.getApellido() + "\n");
+		    txtArea.append("Número de Ventas: " + numVentas + "\n");
+		    txtArea.append("Unidades Vendidas Acumuladas: " + unidadesVendidasAcumuladas + "\n");
+		    txtArea.append("Importe Total Acumulado: " + importeTotalAcumulado + "\n");
+		    txtArea.append("------------------------------\n");
+		}
 	}
 
 }
+

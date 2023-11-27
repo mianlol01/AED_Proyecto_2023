@@ -257,26 +257,26 @@ public class PanelReportes extends Modelo {
 		panelIconSeller.add(IconSeller);
 
 	}
-	ReporteGeneralProductos rgp = new ReporteGeneralProductos();
-	ReporteGeneralVendedores rgv = new ReporteGeneralVendedores();
-	ReporteProducto rp = new ReporteProducto();
-	ReporteVendedor rv = new ReporteVendedor();
-	ReportePrecios rpc = new ReportePrecios();
-	
+
 	public void mouseReleased(MouseEvent e) {
 		if (e.getSource() == panelRGProductos && panelRGProductos.contains(e.getPoint())) {
+			ReporteGeneralProductos rgp = new ReporteGeneralProductos();
 			dialogs(rgp);
 		}
 		if (e.getSource() == panelRGVendedor && panelRGVendedor.contains(e.getPoint())) {
+			ReporteGeneralVendedores rgv = new ReporteGeneralVendedores();
 			dialogs(rgv);
 		}
 		if (e.getSource() == panelRProducto && panelRProducto.contains(e.getPoint())) {
+			ReporteProducto rp = new ReporteProducto();
 			dialogs(rp);
 		}
 		if (e.getSource() == panelRVendedor && panelRVendedor.contains(e.getPoint())) {
+			ReporteVendedor rv = new ReporteVendedor();
 			dialogs(rv);
 		}
 		if (e.getSource() == panelRPrecios && panelRPrecios.contains(e.getPoint())) {
+			ReportePrecios rpc = new ReportePrecios();
 			dialogs(rpc);
 		}
 	}
@@ -335,6 +335,7 @@ public class PanelReportes extends Modelo {
 		repaint();
 		revalidate();
 	}
+
 	public void dialogs(JDialog x) {
 		x.setLocationRelativeTo(null);
 		x.setVisible(true);

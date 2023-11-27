@@ -65,6 +65,7 @@ public class Mantenimiento extends JDialog implements ActionListener, MouseListe
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setLocationRelativeTo(null);
 			dialog.setVisible(true);
+			dialog.pack();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
